@@ -1,0 +1,23 @@
+.vc-stickers-as-gifs {
+    position: relative;
+}
+
+.vc-stickers-as-gifs-message {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.vc-stickers-as-gifs .vc-stickers-as-gifs-star {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.vc-stickers-as-gifs:hover .vc-stickers-as-gifs-star,
+.vc-stickers-as-gifs:focus-within .vc-stickers-as-gifs-star {
+    opacity: 1;
+    pointer-events: auto;
+}

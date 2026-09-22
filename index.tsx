@@ -4,12 +4,18 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import "@plugins/stickersAsGifs/style.css";
+
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
+import ErrorBoundary from "@components/ErrorBoundary";
 import { StarFilled } from "@components/Icons";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { Message, Sticker } from "@vencord/discord-types";
-import { Menu, showToast, StickersStore, Toasts, UserSettingsActionCreators } from "@webpack/common";
+import { findComponentByCodeLazy } from "@webpack";
+import { Menu, React, showToast, StickersStore, Toasts, UserSettingsActionCreators } from "@webpack/common";
+
+const GifFavoriteButton = findComponentByCodeLazy(".FAVORITE_GIF", "ignoreKeyPress:!0");
 
 const StickerExt = [, "png", "png", "json", "gif"] as const;
 
@@ -90,6 +96,47 @@ export default definePlugin({
     description: "Adds stickers to your Favorite GIFs, so you can send them like GIFs even without Nitro or send permissions",
     tags: ["Emotes", "Media", "Utility"],
     authors: [Devs.philosolog],
+    patches: [
+        {
+            find: "}renderStickersAccessories(",
+            replacement: {
+                match: /(\.map\((\i)=>)(\(0,\i\.jsx\)\(\i,\{channel:\i,isInteracting:\i,renderableSticker:\2\},\2\.id\))/,
+                replace: "$1$self.wrapSticker($2,$3)"
+            }
+        },
+        {
+            find: "stickerDescriptors:",
+            replacement: {
+                match: /(\.createElement\)\("div",\{\.\.\.\i,key:(\i)\.sticker\.id)(\},)/,
+                replace: '$1,className:"vc-stickers-as-gifs"$3$self.renderFavoriteButton($2.sticker),'
+            }
+        }
+    ],
+    renderFavoriteButton(sticker: PartialSticker) {
+        if (!sticker.format_type || sticker.format_type === 3 /* LOTTIE */) return null;
+
+        const url = getUrl(sticker);
+        return (
+            <ErrorBoundary noop>
+                <GifFavoriteButton
+                    className="vc-stickers-as-gifs-star"
+                    url={url}
+                    src={url}
+                    format={1}
+                    width={320}
+                    height={320}
+                />
+            </ErrorBoundary>
+        );
+    },
+    wrapSticker(sticker: PartialSticker, children: React.ReactNode) {
+        return (
+            <div className="vc-stickers-as-gifs vc-stickers-as-gifs-message" key={sticker.id}>
+                {children}
+                {this.renderFavoriteButton(sticker)}
+            </div>
+        );
+    },
     contextMenus: {
         "message": messageContextMenuPatch,
         "expression-picker": expressionPickerPatch
