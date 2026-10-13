@@ -13,7 +13,7 @@ import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { Message, Sticker } from "@vencord/discord-types";
 import { findComponentByCodeLazy } from "@webpack";
-import { Menu, React, showToast, StickersStore, Toasts, UserSettingsActionCreators } from "@webpack/common";
+import { Menu, React, showToast, StickersStore, UserSettingsActionCreators } from "@webpack/common";
 
 const GifFavoriteButton = findComponentByCodeLazy(".FAVORITE_GIF", "ignoreKeyPress:!0");
 
@@ -53,7 +53,7 @@ function addStickerToFavoriteGifs(sticker: PartialSticker) {
         };
     });
 
-    showToast(alreadyFavorited ? "Sticker is already a Favorite GIF" : "Added sticker to Favorite GIFs", Toasts.Type.SUCCESS);
+    showToast(alreadyFavorited ? "Sticker is already a Favorite GIF" : "Added sticker to Favorite GIFs", "success");
 }
 
 function buildMenuItem(sticker: PartialSticker) {
