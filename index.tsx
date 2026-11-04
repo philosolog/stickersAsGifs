@@ -53,7 +53,7 @@ function addStickerToFavoriteGifs(sticker: PartialSticker) {
         };
     });
 
-    showToast(alreadyFavorited ? "Sticker is already a Favorite GIF" : "Added sticker to Favorite GIFs", "success");
+    showToast({ text: alreadyFavorited ? "Sticker is already a Favorite GIF" : "Added sticker to Favorite GIFs", variant: "success" });
 }
 
 function buildMenuItem(sticker: PartialSticker) {
